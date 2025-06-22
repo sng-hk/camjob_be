@@ -13,6 +13,7 @@ public class SignupRequestDto {
     private String nickname;
     private String birthDate;
     private String phoneNumber;
+    private String major;
 
     public User toEntity() {
         LocalDate parsedBirthDate;
