@@ -14,6 +14,26 @@ CREATE TABLE user (
                       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+INSERT INTO user (
+    birth_date,
+    created_at,
+    email,
+    nickname,
+    phone_number,
+    role,
+    updated_at,
+    major_id
+) VALUES (
+             '2000-01-01',
+             NOW(),
+             'test@example.com',
+             'test_user',
+             '010-1234-5678',
+             0, -- USER
+             NOW(),
+             NULL  -- 또는 major_id가 존재한다면 넣어도 됨 (예: 1)
+         );
+
 -- major_keyword: 전공별 키워드
 -- 전공 키워드 테이블
 
