@@ -52,8 +52,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: |
             .env
-            ./build/libs/*.jar
             ./Dockerfile
+            ./build/libs/camjob-0.0.1-SNAPSHOT.jar
           target: /home/ec2-user/app
 
       - name: 🐳 EC2에 Docker 설치 + 앱 실행
