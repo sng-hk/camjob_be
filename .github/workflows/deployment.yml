@@ -37,6 +37,13 @@ jobs:
           echo "GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}" >> .env
           echo "GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}" >> .env
 
+      - name: 🧪 디버그 (파일 존재 여부 확인)
+        run: |
+          echo "👀 현재 디렉토리 구조:"
+          ls -al
+          echo "📦 빌드 결과물:"
+          ls -al build/libs
+
       - name: 🚚 EC2로 파일 전송
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -45,8 +52,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: |
             .env
-            build/libs/*.jar
-            Dockerfile
+            ./build/libs/*.jar
+            ./Dockerfile
           target: /home/ec2-user/app
 
       - name: 🐳 EC2에 Docker 설치 + 앱 실행
