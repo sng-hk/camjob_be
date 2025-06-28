@@ -44,7 +44,11 @@ jobs:
           echo "📦 빌드 결과물:"
           ls -al build/libs
 
-      - name: 🚚 EC2로 파일 전송
+      - name: 🔍 .jar 경로 추출
+        id: get_jar
+        run: echo "JAR_PATH=$(find build/libs -name '*.jar' | head -n 1)" >> $GITHUB_ENV
+
+      - name: 🚚 EC2로 전송
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -52,8 +56,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: |
             .env
-            ./Dockerfile
-            ./build/libs/camjob-0.0.1-SNAPSHOT.jar
+            Dockerfile
+            ${{ env.JAR_PATH }}
           target: /home/ec2-user/app
 
       - name: 🐳 EC2에 Docker 설치 + 앱 실행
