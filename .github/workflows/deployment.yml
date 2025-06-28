@@ -1,0 +1,69 @@
+name: Deploy Spring Boot App to EC2 with Docker
+
+on:
+  push:
+    branches: [main]  # main 브랜치 push 시 실행
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📦 코드 체크아웃
+        uses: actions/checkout@v3
+
+      - name: ☕ Java 17 설정
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 🛠 Gradle 빌드
+        run: ./gradlew clean build
+
+      - name: 🐳 Docker 이미지 빌드
+        run: docker build -t springboot-app .
+
+      - name: 📄 .env 파일 생성
+        run: |
+          echo "SPRING_PROFILES_ACTIVE=prod" > .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}" >> .env
+          echo "GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}" >> .env
+
+      - name: 🚚 EC2로 JAR 및 .env 전송
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: |
+            .env
+            build/libs/*.jar
+          target: /home/ec2-user/app
+
+      - name: 🚀 EC2에서 Docker 컨테이너 실행
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ec2-user/app
+
+            echo "✅ 이전 컨테이너 정리"
+            docker stop app || true
+            docker rm app || true
+            docker rmi springboot-app || true
+
+            echo "🐳 새 Docker 이미지 빌드"
+            docker build -t springboot-app .
+
+            echo "🚀 컨테이너 실행"
+            docker run -d --name app \
+              --env-file .env \
+              -p 8080:8080 \
+              springboot-app
