@@ -1,6 +1,7 @@
 package com.example.camjob.controller;
 
-import com.example.camjob.entity.TimeTable;
+import com.example.camjob.dto.TimeTableRequestDTO;
+import com.example.camjob.dto.TimeTableResponseDTO;
 import com.example.camjob.service.TimeTableService;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,25 +17,25 @@ public class TimeTableController {
         this.timetableService = timetableService;
     }
 
-    // ✅ 시간표 등록
+    // 시간표 등록 (POST)
     @PostMapping
-    public TimeTable createTimetable(@RequestBody TimeTable timetable) {
-        return timetableService.saveTimetable(timetable);
+    public TimeTableResponseDTO createTimetable(@RequestBody TimeTableRequestDTO dto) {
+        return timetableService.saveTimetable(dto);
     }
 
-    // ✅ 학기별 시간표 조회
+    // 시간표 조회 (GET)
     @GetMapping
-    public List<TimeTable> getTimetables(@RequestParam String semester) {
+    public List<TimeTableResponseDTO> getTimetables(@RequestParam String semester) {
         return timetableService.getTimetablesBySemester(semester);
     }
 
-    // ✅ 시간표 수정
+    // 시간표 수정 (PUT)
     @PutMapping("/{id}")
-    public TimeTable updateTimetable(@PathVariable Long id, @RequestBody TimeTable timetable) {
-        return timetableService.updateTimetable(id, timetable);
+    public TimeTableResponseDTO updateTimetable(@PathVariable Long id, @RequestBody TimeTableRequestDTO dto) {
+        return timetableService.updateTimetable(id, dto);
     }
 
-    // ✅ 시간표 삭제
+    // 시간표 삭제 (DELETE)
     @DeleteMapping("/{id}")
     public void deleteTimetable(@PathVariable Long id) {
         timetableService.deleteTimetable(id);
