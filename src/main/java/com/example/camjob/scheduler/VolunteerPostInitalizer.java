@@ -49,12 +49,9 @@ public class VolunteerPostInitalizer implements CommandLineRunner {
         String[] areaCodes = {
                 "0101" // 테스트용으로 서울만
         };
-
-        for (String areaCode : areaCodes) {
-            System.out.println("📍 지역 코드: " + areaCode);
-            fetchAndSavePostsByArea(areaCode);
-        }
-
+//        for (String areaCode : areaCodes) {
+//            fetchAndSavePostsByArea(areaCode);
+//        }
         System.out.println("✅ 전체 지역 API 호출 완료");
     }
 
@@ -112,11 +109,9 @@ public class VolunteerPostInitalizer implements CommandLineRunner {
                 // 전공 키워드 매칭
                 List<Major> majors = majorRepository.findAll();
                 for (Major major : majors) {
-                    log.info("🔎 " + major.getName() + " 전공 검색중...");
                     List<MajorKeyword> keywords = keywordRepository.findByMajor(major);
                     for (MajorKeyword keyword : keywords) {
                         if (Pattern.compile("\\b" + Pattern.quote(keyword.getKeyword()) + "\\b").matcher(title).find()) {
-                            log.info(title + "와 " + keyword.getKeyword() + "가 매칭된 전공: " + major.getName());
                             VolunteerPostMajorMapping mapping = new VolunteerPostMajorMapping();
                             mapping.setVolunteerPost(post);
                             mapping.setMajor(major);

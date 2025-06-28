@@ -2,7 +2,7 @@ name: Deploy Spring Boot App to EC2 with Docker
 
 on:
   push:
-    branches: [main]  # main 브랜치 push 시 실행
+    branches: [dev]  #  dev 브랜치에 push 했을 때
 
 jobs:
   deploy:
@@ -21,7 +21,7 @@ jobs:
       - name: 🛠 Gradle 빌드
         run: ./gradlew clean build
 
-      - name: 🐳 Docker 이미지 빌드
+      - name: 🐳 Docker 이미지 빌드 (option)
         run: docker build -t springboot-app .
 
       - name: 📄 .env 파일 생성
@@ -34,7 +34,7 @@ jobs:
           echo "GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}" >> .env
           echo "GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}" >> .env
 
-      - name: 🚚 EC2로 JAR 및 .env 전송
+      - name: 🚚 EC2로 파일 전송
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -43,23 +43,35 @@ jobs:
           source: |
             .env
             build/libs/*.jar
+            Dockerfile
           target: /home/ec2-user/app
 
-      - name: 🚀 EC2에서 Docker 컨테이너 실행
+      - name: 🐳 EC2에 Docker 설치 + 앱 실행
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            echo "🐳 Docker 설치 여부 확인"
+            if ! command -v docker &> /dev/null; then
+              echo "👉 Docker 설치 중..."
+              sudo apt update -y
+              sudo apt install docker -y
+              sudo systemctl start docker
+              sudo systemctl enable docker
+              sudo usermod -aG docker $USER
+            fi
+
+            echo "📁 앱 디렉토리 이동"
             cd /home/ec2-user/app
 
-            echo "✅ 이전 컨테이너 정리"
+            echo "🧹 이전 컨테이너 정리"
             docker stop app || true
             docker rm app || true
             docker rmi springboot-app || true
 
-            echo "🐳 새 Docker 이미지 빌드"
+            echo "🐳 Docker 이미지 빌드"
             docker build -t springboot-app .
 
             echo "🚀 컨테이너 실행"
