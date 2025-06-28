@@ -37,16 +37,14 @@ jobs:
           echo "GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}" >> .env
           echo "GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}" >> .env
 
-      - name: 🧪 디버그 (파일 존재 여부 확인)
-        run: |
-          echo "👀 현재 디렉토리 구조:"
-          ls -al
-          echo "📦 빌드 결과물:"
-          ls -al build/libs
-
-      - name: 🔍 .jar 경로 추출
+      - name: 🔍 실행용 .jar 경로 추출
         id: get_jar
-        run: echo "JAR_PATH=$(find build/libs -name '*.jar' | head -n 1)" >> $GITHUB_ENV
+        run: |
+          echo "JAR_PATH=$(find build/libs -type f -name '*.jar' ! -name '*-plain.jar' | head -n 1)" >> $GITHUB_ENV
+
+      - name: 🧪 JAR 경로 확인용 로그
+        run: |
+          echo "📦 추출된 JAR 경로: ${{ env.JAR_PATH }}"
 
       - name: 🚚 EC2로 전송
         uses: appleboy/scp-action@v0.1.4
