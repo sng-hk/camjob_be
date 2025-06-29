@@ -46,6 +46,14 @@ jobs:
         run: |
           echo "📦 추출된 JAR 경로: ${{ env.JAR_PATH }}"
 
+      - name: 💻 EC2에 디렉토리 생성 (에러 없이 안전)
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: mkdir -p /home/ec2-user/app
+
       - name: 🚚 EC2로 전송
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -55,7 +63,7 @@ jobs:
           source: |
             .env
             Dockerfile
-#            ${{ env.JAR_PATH }}
+            ${{ env.JAR_PATH }}
           target: /home/ec2-user/app
 
       - name: 🐳 EC2에 Docker 설치 + 앱 실행
