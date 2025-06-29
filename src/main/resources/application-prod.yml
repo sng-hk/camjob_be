@@ -36,3 +36,6 @@ spring:
             user-name-attribute: id
 jwt:
   secret: my-super-secret-key-that-is-at-least-32-characters
+
+server:
+  forward-headers-strategy: framework
