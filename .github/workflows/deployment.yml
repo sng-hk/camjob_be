@@ -30,9 +30,6 @@ jobs:
       - name: 📦 Docker 이미지를 .tar로 저장
         run: docker save -o springboot-app.tar springboot-app
 
-      - name: 🔐 파일 권한 변경
-        run: chmod 644 springboot-app.tar .env
-
       - name: 📄 .env 파일 생성
         run: |
           echo "SPRING_PROFILES_ACTIVE=prod" > .env
@@ -42,6 +39,9 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}" >> .env
           echo "GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}" >> .env
+
+      - name: 🔐 파일 권한 변경
+        run: chmod 644 springboot-app.tar .env
 
       - name: 🚚 EC2로 Docker 이미지 tar + .env 전송
         uses: appleboy/scp-action@v0.1.4
