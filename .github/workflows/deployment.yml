@@ -53,7 +53,15 @@ jobs:
             sudo chown -R $USER:$USER /home/${{ secrets.EC2_USER }}/app
             sudo chmod -R 755 /home/${{ secrets.EC2_USER }}/app
 
-      - name: 📡 EC2에 파일 전송
+      - name: 🚚 EC2로 Docker 이미지 tar + .env 전송
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_SSH_PORT }}
+          source: "springboot-app.tar,.env"
+          target: /home/${{ secrets.EC2_USER }}/app
 
       - name: 🐳 EC2에 Docker 설치 + 앱 실행
         uses: appleboy/ssh-action@master
@@ -74,6 +82,9 @@ jobs:
             
             echo "📁 앱 디렉토리 이동"
             cd /home/${{ secrets.EC2_USER }}/app
+            
+            echo "📦 Docker 이미지 불러오기"
+            docker load -i springboot-app.tar
             
             echo "🧹 이전 컨테이너 정리"
             docker stop app || true
