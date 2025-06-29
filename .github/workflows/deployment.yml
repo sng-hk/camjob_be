@@ -30,6 +30,9 @@ jobs:
       - name: 📦 Docker 이미지를 .tar로 저장
         run: docker save -o springboot-app.tar springboot-app
 
+      - name: 🔐 파일 권한 변경
+        run: chmod 644 springboot-app.tar .env
+
       - name: 📄 .env 파일 생성
         run: |
           echo "SPRING_PROFILES_ACTIVE=prod" > .env
