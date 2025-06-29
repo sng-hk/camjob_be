@@ -1,4 +1,5 @@
 package com.example.camjob.config;
+
 import com.example.camjob.repository.UserRepository;
 import com.example.camjob.security.handler.OAuth2AuthenticationSuccessHandler;
 import com.example.camjob.security.jwt.JwtAuthenticationFilter;
@@ -22,6 +23,7 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
+
 
     public SecurityConfig(JwtUtil jwtUtil, UserRepository userRepository, ObjectMapper objectMapper) {
         this.jwtUtil = jwtUtil;
