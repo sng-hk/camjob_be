@@ -53,6 +53,8 @@ jobs:
             sudo chown -R $USER:$USER /home/${{ secrets.EC2_USER }}/app
             sudo chmod -R 755 /home/${{ secrets.EC2_USER }}/app
 
+      - name: 📡 EC2에 파일 전송
+
       - name: 🐳 EC2에 Docker 설치 + 앱 실행
         uses: appleboy/ssh-action@master
         with:
@@ -77,9 +79,6 @@ jobs:
             docker stop app || true
             docker rm app || true
             docker rmi springboot-app || true
-            
-            echo "🐳 Docker 이미지 빌드"
-            docker build -t springboot-app .
             
             echo "🚀 컨테이너 실행"
             docker run -d --name app \
