@@ -53,12 +53,36 @@ jobs:
             sudo chown -R $USER:$USER /home/${{ secrets.EC2_USER }}/app
             sudo chmod -R 755 /home/${{ secrets.EC2_USER }}/app
 
-      - name: 🚚 EC2로 Docker 이미지 tar + .env 전송
-        uses: appleboy/scp-action@v0.1.4
+      - name: 🐳 EC2에 Docker 설치 + 앱 실행
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.EC2_SSH_PORT }}
-          source: "springboot-app.tar,.env"
-          target: /home/${{ secrets.EC2_USER }}/app
+          script: |
+            echo "🐳 Docker 설치 여부 확인"
+            if ! command -v docker &> /dev/null; then
+              echo "👉 Docker 설치 중..."
+              sudo apt update -y
+              sudo apt install docker -y
+              sudo systemctl start docker
+              sudo systemctl enable docker
+              sudo usermod -aG docker $USER
+            fi
+            
+            echo "📁 앱 디렉토리 이동"
+            cd /home/ec2-user/app
+            
+            echo "🧹 이전 컨테이너 정리"
+            docker stop app || true
+            docker rm app || true
+            docker rmi springboot-app || true
+            
+            echo "🐳 Docker 이미지 빌드"
+            docker build -t springboot-app .
+            
+            echo "🚀 컨테이너 실행"
+            docker run -d --name app \
+              --env-file .env \
+              -p 8080:8080 \
+              springboot-app
