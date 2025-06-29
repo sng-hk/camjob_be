@@ -12,117 +12,72 @@ jobs:
       - name: 📦 코드 체크아웃
         uses: actions/checkout@v3
 
-      - name: ☕ Java 17 설정
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: 🔑 gradlew 실행 권한 부여
-        run: chmod +x ./gradlew
-
-      - name: 🛠 Gradle 빌드
-        run: ./gradlew clean build
-
-      - name: 🐳 Docker 이미지 빌드 (option)
-        run: docker build -t springboot-app .
-
-      - name: 📄 .env 파일 생성
-        run: |
-          echo "SPRING_PROFILES_ACTIVE=prod" > .env
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-          echo "DB_URL=${{ secrets.DB_URL }}" >> .env
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}" >> .env
-          echo "GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}" >> .env
-
-      - name: 🔍 실행용 .jar 경로 추출
-        id: get_jar
-        run: |
-          echo "JAR_PATH=$(find build/libs -type f -name '*.jar' ! -name '*-plain.jar' | head -n 1)" >> $GITHUB_ENV
-
-      - name: 🧪 JAR 경로 확인용 로그
-        run: |
-          echo "📦 추출된 JAR 경로: ${{ env.JAR_PATH }}"
-
-      - name: 💻 EC2에 디렉토리 생성 (에러 없이 안전)
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: sudo mkdir -p /home/ubuntu/app
-
-
-      - name: 🔍 전송 전 파일 존재 여부 확인
-        run: |
-          echo "📄 .env 파일 확인:"
-          if [ -f .env ]; then
-            echo "✅ .env 있음"
-          else
-            echo "❌ .env 없음"
-            exit 1
-          fi
-
-          echo "📄 Dockerfile 확인:"
-          if [ -f Dockerfile ]; then
-            echo "✅ Dockerfile 있음"
-          else
-            echo "❌ Dockerfile 없음"
-            exit 1
-          fi
-
-          echo "📦 JAR 파일 확인: ${{ env.JAR_PATH }}"
-          if [ -f "${{ env.JAR_PATH }}" ]; then
-            echo "✅ JAR 있음"
-          else
-            echo "❌ JAR 없음"
-            exit 1
-          fi
-          
-      - name: 권한 변경
-        run: chmod 644 .env Dockerfile
+#      - name: ☕ Java 17 설정
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: 'temurin'
+#          java-version: '17'
+#
+#      - name: 🔑 gradlew 실행 권한 부여
+#        run: chmod +x ./gradlew
+#
+#      - name: 🛠 Gradle 빌드
+#        run: ./gradlew clean build
+#
+#      - name: 🐳 Docker 이미지 빌드 (option)
+#        run: docker build -t springboot-app .
+#
+#      - name: 📄 .env 파일 생성
+#        run: |
+#          echo "SPRING_PROFILES_ACTIVE=prod" > .env
+#          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+#          echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+#          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+#          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+#          echo "GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}" >> .env
+#          echo "GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}" >> .env
 
       - name: 🚚 EC2로 전송
-        uses: appleboy/scp-action@v0.1.4
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: ".env,Dockerfile,build/libs/camjob-0.0.1-SNAPSHOT.jar"
+          port: ${{ secrets.EC2_SSH_PORT }}
+          script: |
+            whoami
           target: /home/ubuntu/app
 
-      - name: 🐳 EC2에 Docker 설치 + 앱 실행
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            echo "🐳 Docker 설치 여부 확인"
-            if ! command -v docker &> /dev/null; then
-              echo "👉 Docker 설치 중..."
-              sudo apt update -y
-              sudo apt install docker -y
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              sudo usermod -aG docker $USER
-            fi
-
-            echo "📁 앱 디렉토리 이동"
-            cd /home/ubuntu/app
-
-            echo "🧹 이전 컨테이너 정리"
-            docker stop app || true
-            docker rm app || true
-            docker rmi springboot-app || true
-
-            echo "🐳 Docker 이미지 빌드"
-            docker build -t springboot-app .
-
-            echo "🚀 컨테이너 실행"
-            docker run -d --name app \
-              --env-file .env \
-              -p 8080:8080 \
-              springboot-app
+#      - name: 🐳 EC2에 Docker 설치 + 앱 실행
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.EC2_HOST }}
+#          username: ${{ secrets.EC2_USER }}
+#          key: ${{ secrets.EC2_SSH_KEY }}
+#          script: |
+#            echo "🐳 Docker 설치 여부 확인"
+#            if ! command -v docker &> /dev/null; then
+#              echo "👉 Docker 설치 중..."
+#              sudo apt update -y
+#              sudo apt install docker -y
+#              sudo systemctl start docker
+#              sudo systemctl enable docker
+#              sudo usermod -aG docker $USER
+#            fi
+#
+#            echo "📁 앱 디렉토리 이동"
+#            cd /home/ubuntu/app
+#
+#            echo "🧹 이전 컨테이너 정리"
+#            docker stop app || true
+#            docker rm app || true
+#            docker rmi springboot-app || true
+#
+#            echo "🐳 Docker 이미지 빌드"
+#            docker build -t springboot-app .
+#
+#            echo "🚀 컨테이너 실행"
+#            docker run -d --name app \
+#              --env-file .env \
+#              -p 8080:8080 \
+#              springboot-app
