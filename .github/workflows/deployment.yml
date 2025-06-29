@@ -81,6 +81,8 @@ jobs:
             exit 1
           fi
           
+      - name: 권한 변경
+        run: chmod 644 .env Dockerfile
 
       - name: 🚚 EC2로 전송
         uses: appleboy/scp-action@v0.1.4
