@@ -46,7 +46,7 @@ jobs:
           port: ${{ secrets.EC2_SSH_PORT }}
           script: |
             whoami
-          target: /home/ubuntu/app
+            pwd
 
 #      - name: 🐳 EC2에 Docker 설치 + 앱 실행
 #        uses: appleboy/ssh-action@master
