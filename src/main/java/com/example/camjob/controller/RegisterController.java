@@ -1,6 +1,8 @@
 package com.example.camjob.controller;
 
 import com.example.camjob.dto.SignupRequestDto;
+import com.example.camjob.entity.Major;
+import com.example.camjob.repository.MajorRepository;
 import com.example.camjob.repository.UserRepository;
 import com.example.camjob.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +21,17 @@ import java.util.Map;
 public class RegisterController {
 
     private final UserRepository userRepository;
+    private final MajorRepository majorRepository;
     private final JwtUtil jwtUtil;
 
     @PostMapping("/signup")
     public ResponseEntity<?> register(@RequestBody SignupRequestDto request) {
         try {
-            userRepository.save(request.toEntity());
+            // 전공 조회 또는 생성
+            Major major = majorRepository.findByName(request.getMajor())
+                    .orElseGet(() -> majorRepository.save(new Major(null, request.getMajor())));
+
+            userRepository.save(request.toEntity(major));
 
             // 회원가입 성공 → 토큰 발급
             String token = jwtUtil.generateToken(request.getEmail(), request.getNickname());
