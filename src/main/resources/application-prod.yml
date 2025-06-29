@@ -20,7 +20,7 @@ spring:
       client:
         registration:
           kakao:
-            client-id: b3d8ebee0ed3d2e2821efe200100d89a
+            client-id: 1909e396187f6f8dc6c21ee2eaecba62
             client-secret:
             client-name: Kakao
             authorization-grant-type: authorization_code
