@@ -71,7 +71,7 @@ jobs:
             fi
             
             echo "📁 앱 디렉토리 이동"
-            cd /home/ec2-user/app
+            cd /home/${{ secrets.EC2_USER }}/app
             
             echo "🧹 이전 컨테이너 정리"
             docker stop app || true
