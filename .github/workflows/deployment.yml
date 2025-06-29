@@ -52,7 +52,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          script: mkdir -p /home/ec2-user/app
+          script: sudo mkdir -p /home/ec2-user/app
 
       - name: 🚚 EC2로 전송
         uses: appleboy/scp-action@v0.1.4
