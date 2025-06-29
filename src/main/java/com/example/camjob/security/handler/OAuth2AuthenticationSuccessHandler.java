@@ -43,12 +43,12 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             // 기존 회원이면 JWT 생성
             String token = jwtUtil.generateToken(email, nickname);
             // 토큰을 쿼리 파라미터로 붙여서 프론트 메인 페이지로 리다이렉트
-            redirectURL = "http://localhost:5500/oauth/callback?token=" + token + "&isNew=false";
+            redirectURL = "http://localhost:5500/oauth/callback.html?token=" + token + "&isNew=false";
         } else {
             // 신규 회원이면 email, nickname 쿼리스트링으로 회원가입 페이지로 리다이렉트
             String nicknameEncoded = URLEncoder.encode(nickname, StandardCharsets.UTF_8);
             String emailEncoded = URLEncoder.encode(email, StandardCharsets.UTF_8);
-            redirectURL = "http://localhost:5500/oauth/callback?email=" + emailEncoded + "&nickname=" + nicknameEncoded + "&isNew=true";
+            redirectURL = "http://localhost:5500/oauth/callback.html?email=" + emailEncoded + "&nickname=" + nicknameEncoded + "&isNew=true";
         }
         response.sendRedirect(redirectURL);
     }
