@@ -9,11 +9,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-public class WorkService {
+public class WorkHistoryService {
 
     private final WorkRepository workRepository;
 
-    public WorkService(WorkRepository workRepository) {
+    public WorkHistoryService(WorkRepository workRepository) {
         this.workRepository = workRepository;
     }
 
