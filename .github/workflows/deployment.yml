@@ -89,7 +89,6 @@ jobs:
             echo "🧹 이전 컨테이너 정리"
             sudo docker stop app || true
             sudo docker rm app || true
-            sudo docker rmi springboot-app || true
             
             echo "🚀 컨테이너 실행"
             sudo docker run -d --name app \
