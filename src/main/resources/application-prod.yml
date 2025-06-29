@@ -1,0 +1,38 @@
+# src/main/resources/application-prod.yml
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://camjob.cj6g26aueq9y.ap-northeast-2.rds.amazonaws.com/camjob?serverTimezone=UTC
+    username: root
+    password: camjobpassword0628
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+
+  # Spring Security가 제공하는 OAuth2 로그인 시작 URL
+  # "http://localhost:8080/oauth2/authorization/kakao"
+  # 사용 예시 :  window.location.href = 'http://localhost:8080/oauth2/authorization/kakao';
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: b3d8ebee0ed3d2e2821efe200100d89a
+            client-secret:
+            client-name: Kakao
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - profile_nickname
+              - account_email
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+jwt:
+  secret: my-super-secret-key-that-is-at-least-32-characters
