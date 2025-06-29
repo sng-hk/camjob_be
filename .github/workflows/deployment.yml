@@ -52,7 +52,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          script: sudo mkdir -p /home/ec2-user/app
+          script: sudo mkdir -p /home/ubuntu/app
 
 
       - name: 🔍 전송 전 파일 존재 여부 확인
@@ -91,7 +91,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: ".env,Dockerfile,build/libs/camjob-0.0.1-SNAPSHOT.jar"
-          target: /home/ec2-user/app
+          target: /home/ubuntu/app
 
       - name: 🐳 EC2에 Docker 설치 + 앱 실행
         uses: appleboy/ssh-action@master
