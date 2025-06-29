@@ -54,6 +54,34 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: sudo mkdir -p /home/ec2-user/app
 
+
+      - name: 🔍 전송 전 파일 존재 여부 확인
+        run: |
+          echo "📄 .env 파일 확인:"
+          if [ -f .env ]; then
+            echo "✅ .env 있음"
+          else
+            echo "❌ .env 없음"
+            exit 1
+          fi
+
+          echo "📄 Dockerfile 확인:"
+          if [ -f Dockerfile ]; then
+            echo "✅ Dockerfile 있음"
+          else
+            echo "❌ Dockerfile 없음"
+            exit 1
+          fi
+
+          echo "📦 JAR 파일 확인: ${{ env.JAR_PATH }}"
+          if [ -f "${{ env.JAR_PATH }}" ]; then
+            echo "✅ JAR 있음"
+          else
+            echo "❌ JAR 없음"
+            exit 1
+          fi
+          
+
       - name: 🚚 EC2로 전송
         uses: appleboy/scp-action@v0.1.4
         with:
