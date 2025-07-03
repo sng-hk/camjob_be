@@ -80,18 +80,23 @@ jobs:
               sudo usermod -aG docker $USER
             fi
             
+            echo "🐳 Docker Compose 설치 여부 확인"
+            if ! command -v docker-compose &> /dev/null; then
+              echo "👉 Docker Compose 설치 중..."
+              sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+            fi
+            
             echo "📁 앱 디렉토리 이동"
             cd /home/${{ secrets.EC2_USER }}/app
             
             echo "📦 Docker 이미지 불러오기"
             sudo docker load -i springboot-app.tar
             
-            echo "🧹 이전 컨테이너 정리"
-            sudo docker stop app || true
-            sudo docker rm app || true
-            
-            echo "🚀 컨테이너 실행"
-            sudo docker run -d --name app \
-              --env-file .env \
-              -p 8080:8080 \
-              springboot-app
+             echo "🧹 docker-compose로 기존 컨테이너 정리"
+            docker-compose down
+                      
+            echo "🚀 docker-compose로 재배포"
+            docker-compose up -d
+#            docker-compose up -d --force-recreate
+# --force-recreate :  기존에 동일한 컨테이너가 있어도 무조건 재생성
