@@ -3,9 +3,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://camjob.cj6g26aueq9y.ap-northeast-2.rds.amazonaws.com/camjob?serverTimezone=UTC
-    username: root
-    password: camjobpassword0628
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     show-sql: true
@@ -35,7 +35,7 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 jwt:
-  secret: my-super-secret-key-that-is-at-least-32-characters
+  secret: ${JWT_SECRET}
 
 server:
   forward-headers-strategy: framework
