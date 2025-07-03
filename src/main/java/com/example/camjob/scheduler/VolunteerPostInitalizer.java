@@ -49,9 +49,9 @@ public class VolunteerPostInitalizer implements CommandLineRunner {
         String[] areaCodes = {
                 "0101" // 테스트용으로 서울만
         };
-//        for (String areaCode : areaCodes) {
-//            fetchAndSavePostsByArea(areaCode);
-//        }
+        for (String areaCode : areaCodes) {
+            fetchAndSavePostsByArea(areaCode);
+        }
         System.out.println("✅ 전체 지역 API 호출 완료");
     }
 
