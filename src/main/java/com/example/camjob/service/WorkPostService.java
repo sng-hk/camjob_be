@@ -1,5 +1,7 @@
 package com.example.camjob.service;
 
+import com.example.camjob.dto.WorkPostResponseDto;
+import com.example.camjob.entity.User;
 import com.example.camjob.entity.WorkApplication;
 import com.example.camjob.entity.WorkPost;
 import com.example.camjob.entity.WorkScrap;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,12 +25,14 @@ public class WorkPostService {
     private final WorkScrapRepository scrapRepo;
     private final UserRepository userRepository;
 
-    public List<WorkPost> getAllPosts() {
-        return postRepo.findAll();
+    public List<WorkPostResponseDto> getAllPosts(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("해당 이메일의 사용자가 없습니다."));
+        return null;
     }
 
-    public List<WorkPost> getPostsByDepartment(String department) {
-        return postRepo.findAllByDepartment(department).orElseThrow(() -> new RuntimeException("해당 분야 공고 없음"));
+    public List<WorkPostResponseDto> getPostsByDepartment(String email, String department) {
+//        postRepo.findAllByDepartment(department).orElseThrow(() -> new RuntimeException("해당 분야 공고 없음"));
+        return null;
     }
 
     public WorkPost getPost(Long workId) {

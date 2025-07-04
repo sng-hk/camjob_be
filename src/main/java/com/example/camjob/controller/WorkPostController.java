@@ -1,6 +1,7 @@
 package com.example.camjob.controller;
 
 import com.example.camjob.dto.EducationDto;
+import com.example.camjob.dto.WorkPostResponseDto;
 import com.example.camjob.entity.Education;
 import com.example.camjob.entity.WorkApplication;
 import com.example.camjob.entity.WorkPost;
@@ -23,11 +24,16 @@ public class WorkPostController {
 
     // 게시글 전체 조회 (비인증)
     @GetMapping
-    public List<WorkPost> list(@RequestParam(required = false) String department) {
-        if(department != null) {
-            return workPostService.getPostsByDepartment(department);
+    public List<WorkPostResponseDto> list(@RequestParam(required = false) String department, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("인증된 사용자가 아닙니다.");
         }
-        return workPostService.getAllPosts();
+        Map<String, String> userInfo = (Map<String, String>) authentication.getPrincipal();
+        String email = userInfo.get("email");
+        if(department != null) {
+            return workPostService.getPostsByDepartment(email, department);
+        }
+        return workPostService.getAllPosts(email);
     }
 
     // 게시글 상세 조회 (비인증)
@@ -36,7 +42,7 @@ public class WorkPostController {
         return workPostService.getPost(workId);
     }
 
-    // 게시글 신청
+    // 근로 신청
     @PostMapping("/{workId}/apply")
     public WorkApplication apply(@PathVariable Long workId, Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
