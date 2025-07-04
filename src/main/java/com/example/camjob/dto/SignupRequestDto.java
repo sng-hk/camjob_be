@@ -29,7 +29,6 @@ public class SignupRequestDto {
                 .nickname(this.nickname)
                 .phoneNumber(this.phoneNumber)
                 .birthDate(parsedBirthDate)
-                .major(major)
                 .role(UserRole.ROLE_USER) // TODO: 추후 수정 필요 (ex. role을 requestbody로 받아오는 방식)
                 .build();
     }
