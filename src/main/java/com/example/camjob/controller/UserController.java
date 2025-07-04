@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.Map;
 
 @RestController
@@ -27,10 +28,7 @@ public class UserController {
         Map<String, String> userInfo = (Map<String, String>) authentication.getPrincipal();
         String email = userInfo.get("email");
         User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("해당 이메일의 사용자가 없습니다."));
-//        String age = LocalDate.now(). user.getBirthDate()
-
-        return ResponseEntity.ok(new UserInfoResponseDto(user, "22"));
-
-
+        String age = Period.between(LocalDate.now(), user.getBirthDate()).getYears() + "";
+        return ResponseEntity.ok(new UserInfoResponseDto(user, age));
     }
 }

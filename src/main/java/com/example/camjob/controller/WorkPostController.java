@@ -23,7 +23,10 @@ public class WorkPostController {
 
     // 게시글 전체 조회 (비인증)
     @GetMapping
-    public List<WorkPost> list() {
+    public List<WorkPost> list(@RequestParam(required = false) String department) {
+        if(department != null) {
+            return workPostService.getPostsByDepartment(department);
+        }
         return workPostService.getAllPosts();
     }
 

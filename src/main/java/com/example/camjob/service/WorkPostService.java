@@ -26,6 +26,10 @@ public class WorkPostService {
         return postRepo.findAll();
     }
 
+    public List<WorkPost> getPostsByDepartment(String department) {
+        return postRepo.findAllByDepartment(department).orElseThrow(() -> new RuntimeException("해당 분야 공고 없음"));
+    }
+
     public WorkPost getPost(Long workId) {
         return postRepo.findById(workId)
                 .orElseThrow(() -> new RuntimeException("해당 근로 공고가 없습니다."));
