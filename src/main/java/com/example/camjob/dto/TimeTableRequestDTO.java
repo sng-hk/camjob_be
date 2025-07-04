@@ -1,6 +1,7 @@
 package com.example.camjob.dto;
 
 public class TimeTableRequestDTO {
+
     private String semester;
     private String subjectName;
     private String dayOfWeek;

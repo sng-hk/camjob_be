@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface TimeTableRepository extends JpaRepository<TimeTable, Long> {
 
-    // 학기별 시간표 조회
-    List<TimeTable> findBySemester(String semester);
+    // ✅ 사용자(email) + 학기별 시간표 조회
+    List<TimeTable> findByUserEmailAndSemester(String userEmail, String semester);
 
-    // 동일한 요일/시간대 중복 방지 체크
-    boolean existsBySemesterAndDayOfWeekAndStartTimeAndEndTime(
-            String semester, String dayOfWeek, String startTime, String endTime
+    // ✅ 사용자별 동일한 요일/시간대 중복 방지 체크
+    boolean existsByUserEmailAndSemesterAndDayOfWeekAndStartTimeAndEndTime(
+            String userEmail, String semester, String dayOfWeek, String startTime, String endTime
     );
 }

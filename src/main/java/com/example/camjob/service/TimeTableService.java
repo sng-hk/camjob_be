@@ -18,15 +18,21 @@ public class TimeTableService {
         this.timetableRepository = timetableRepository;
     }
 
-    public TimeTableResponseDTO saveTimetable(TimeTableRequestDTO dto) {
-        boolean exists = timetableRepository.existsBySemesterAndDayOfWeekAndStartTimeAndEndTime(
-                dto.getSemester(), dto.getDayOfWeek(), dto.getStartTime(), dto.getEndTime()
+    public TimeTableResponseDTO saveTimetable(String userEmail, TimeTableRequestDTO dto) {
+        boolean exists = timetableRepository.existsByUserEmailAndSemesterAndDayOfWeekAndStartTimeAndEndTime(
+                userEmail,
+                dto.getSemester(),
+                dto.getDayOfWeek(),
+                dto.getStartTime(),
+                dto.getEndTime()
         );
+
         if (exists) {
             throw new IllegalArgumentException("해당 요일/시간대에 이미 시간표가 존재합니다.");
         }
 
         TimeTable timetable = new TimeTable(
+                userEmail,
                 dto.getSemester(),
                 dto.getSubjectName(),
                 dto.getDayOfWeek(),
@@ -38,8 +44,8 @@ public class TimeTableService {
         return toResponseDTO(saved);
     }
 
-    public List<TimeTableResponseDTO> getTimetablesBySemester(String semester) {
-        return timetableRepository.findBySemester(semester)
+    public List<TimeTableResponseDTO> getTimetablesByUserEmailAndSemester(String userEmail, String semester) {
+        return timetableRepository.findByUserEmailAndSemester(userEmail, semester)
                 .stream()
                 .map(this::toResponseDTO)
                 .collect(Collectors.toList());
@@ -53,6 +59,7 @@ public class TimeTableService {
         timetable.setDayOfWeek(dto.getDayOfWeek());
         timetable.setStartTime(dto.getStartTime());
         timetable.setEndTime(dto.getEndTime());
+        // userEmail과 semester는 수정하지 않는다고 가정
 
         TimeTable updated = timetableRepository.save(timetable);
         return toResponseDTO(updated);
@@ -65,6 +72,7 @@ public class TimeTableService {
     private TimeTableResponseDTO toResponseDTO(TimeTable timetable) {
         return new TimeTableResponseDTO(
                 timetable.getId(),
+                timetable.getUserEmail(),
                 timetable.getSemester(),
                 timetable.getSubjectName(),
                 timetable.getDayOfWeek(),
@@ -73,3 +81,4 @@ public class TimeTableService {
         );
     }
 }
+

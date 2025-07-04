@@ -4,13 +4,15 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "timetables", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"semester", "subjectName", "dayOfWeek", "startTime", "endTime"})
+        @UniqueConstraint(columnNames = {"userEmail", "semester", "subjectName", "dayOfWeek", "startTime", "endTime"})
 })
 public class TimeTable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String userEmail;  // 👈 userId 대신 email로 변경
 
     private String semester;
     private String subjectName;
@@ -22,7 +24,8 @@ public class TimeTable {
     public TimeTable() {}
 
     // 전체 생성자
-    public TimeTable(String semester, String subjectName, String dayOfWeek, String startTime, String endTime) {
+    public TimeTable(String userEmail, String semester, String subjectName, String dayOfWeek, String startTime, String endTime) {
+        this.userEmail = userEmail;
         this.semester = semester;
         this.subjectName = subjectName;
         this.dayOfWeek = dayOfWeek;
@@ -32,6 +35,10 @@ public class TimeTable {
 
     // getter/setter
     public Long getId() { return id; }
+
+    public String getUserEmail() { return userEmail; }
+    public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
+
     public String getSemester() { return semester; }
     public void setSemester(String semester) { this.semester = semester; }
 
@@ -47,3 +54,4 @@ public class TimeTable {
     public String getEndTime() { return endTime; }
     public void setEndTime(String endTime) { this.endTime = endTime; }
 }
+
