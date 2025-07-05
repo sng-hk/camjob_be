@@ -127,13 +127,14 @@ public class WorkPostService {
      */
     private WorkPostResponseDto toDto(WorkPost post, boolean isScrapped) {
         WorkPostResponseDto dto = new WorkPostResponseDto();
+        dto.setId(post.getId());  // 🔷 여기 추가
         dto.setTitle(post.getTitle());
         dto.setDepartment(post.getDepartment());
         dto.setDescription(post.getDescription());
         dto.setStartDate(post.getStartDate());
         dto.setEndDate(post.getEndDate());
-        dto.setClosed(post.isClosed());      // DB에 저장된 마감여부
-        dto.setScrapped(isScrapped);        // work_scrap 테이블에서 동적으로 계산
+        dto.setClosed(post.isClosed());
+        dto.setScrapped(isScrapped);
         return dto;
     }
 }

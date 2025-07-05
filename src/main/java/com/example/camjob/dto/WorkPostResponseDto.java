@@ -8,6 +8,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class WorkPostResponseDto {
+    private Long id;                // 🔷 추가: 게시글 ID
     private String title;
     private String department;
     private String description;
