@@ -23,9 +23,28 @@ public class VolunteerController {
     private final UserRepository userRepository;
     private final VolunteerService volunteerService;
 
+    @GetMapping("/scrap")
+    public ResponseEntity<List<VolunteerPostResponseDto>> getScrapList(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("인증된 사용자가 아닙니다.");
+        }
+        Map<String, String> userInfo = (Map<String, String>) authentication.getPrincipal();
+        String email = userInfo.get("email");
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("해당 이메일의 사용자가 없습니다."));
+        List<VolunteerPostResponseDto> result = volunteerService.getScrapList(user.getId());
+        return ResponseEntity.ok(result);
+    }
+
+
     @GetMapping
-    public ResponseEntity<List<VolunteerPostResponseDto>> getList() {
-        List<VolunteerPostResponseDto> result = volunteerPostRepository.findAllWithMajor();
+    public ResponseEntity<List<VolunteerPostResponseDto>> getList(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("인증된 사용자가 아닙니다.");
+        }
+        Map<String, String> userInfo = (Map<String, String>) authentication.getPrincipal();
+        String email = userInfo.get("email");
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("해당 이메일의 사용자가 없습니다."));
+        List<VolunteerPostResponseDto> result = volunteerPostRepository.findAll(user.getId());
         return ResponseEntity.ok(result);
     }
 
@@ -47,7 +66,7 @@ public class VolunteerController {
 
     // TODO : 봉사 정보 스크랩 추가 및 삭제
     @PostMapping("/scrap/{postId}")
-    public ResponseEntity<?> scrap(Authentication authentication, @PathVariable Long volunteerPostId) {
+    public ResponseEntity<?> scrap(Authentication authentication, @PathVariable Long postId) {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new RuntimeException("인증된 사용자가 아닙니다.");
         }
@@ -55,7 +74,7 @@ public class VolunteerController {
         String email = userInfo.get("email");
         User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("해당 이메일의 사용자가 없습니다."));
 
-        volunteerService.scrap(user, volunteerPostId);
+        volunteerService.scrap(user, postId);
         return ResponseEntity.ok().build();
     }
 

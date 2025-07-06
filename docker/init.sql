@@ -45,6 +45,7 @@ INSERT INTO region (code, name) VALUES
                                     ('0115', '경남'),
                                     ('0116', '제주');
 
+use camjob;
 
 INSERT INTO Major (name) VALUES
                              ('홍보디자인학과'),
